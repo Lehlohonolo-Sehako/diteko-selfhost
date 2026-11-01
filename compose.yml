@@ -1,0 +1,70 @@
+# Diteko, self-hosted: the server (API + web console), Postgres and Redis.
+#
+#   sh setup.sh            # once: writes .env with a database password and a bootstrap key
+#   docker compose up -d
+#
+# Settings live in .env (see .env.example). The quickstart is README.md in this folder.
+# Not "diteko": that is the development stack's project name (src/main/docker), and sharing it
+# would make each stack treat the other's containers as its own.
+name: diteko-selfhost
+
+services:
+  app:
+    image: ${DITEKO_IMAGE:-ghcr.io/lehlohonolo-sehako/diteko}:${DITEKO_VERSION:-0.1}
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: prod,api-docs # api-docs: the API reference under Settings
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/diteko
+      SPRING_DATASOURCE_USERNAME: diteko
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?run sh setup.sh first, or set POSTGRES_PASSWORD in .env}
+      JHIPSTER_CACHE_REDIS_SERVER: redis://redis:6379
+      # API keys are on: every call needs 'Authorization: Bearer dk_...', the console's included.
+      DITEKO_AUTH_MODE: keys
+      # An admin key accepted without being stored, for creating the first real keys. Remove it from
+      # .env once you have an ADMIN key of your own, then 'docker compose up -d' again.
+      DITEKO_AUTH_BOOTSTRAPKEY: ${DITEKO_AUTH_BOOTSTRAPKEY:-}
+      # Amazon Connect stays off (runs are local dry runs) until these are set; see README.md.
+      DITEKO_CONNECT_ENABLED: ${DITEKO_CONNECT_ENABLED:-false}
+      DITEKO_CONNECT_REGION: ${DITEKO_CONNECT_REGION:-}
+      DITEKO_CONNECT_INSTANCEID: ${DITEKO_CONNECT_INSTANCEID:-}
+      DITEKO_CONNECT_HOURSALWAYSOPEN: ${DITEKO_CONNECT_HOURSALWAYSOPEN:-}
+      DITEKO_CONNECT_HOURSNEVEROPEN: ${DITEKO_CONNECT_HOURSNEVEROPEN:-}
+      AWS_REGION: ${DITEKO_CONNECT_REGION:-}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN:-}
+      # Where the console's Docs links point. Set it empty in .env to hide them.
+      DITEKO_DOCS_URL: ${DITEKO_DOCS_URL-https://lehlohonolo-sehako.github.io/diteko-selfhost/}
+      JAVA_OPTS: -XX:MaxRAMPercentage=75.0
+    ports:
+      # Only this machine can reach it. To serve others, put a TLS reverse proxy in front (README.md).
+      - ${DITEKO_BIND:-127.0.0.1}:${DITEKO_PORT:-8080}:8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  postgres:
+    image: postgres:18.3
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: diteko
+      POSTGRES_USER: diteko
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?run sh setup.sh first, or set POSTGRES_PASSWORD in .env}
+    volumes:
+      # Postgres 18 keeps its data under /var/lib/postgresql/<major>/, so mount the parent.
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U diteko -d diteko']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    # A cache only: losing it costs nothing but a slower first request.
+    image: redis:8.6.1
+    restart: unless-stopped
+
+volumes:
+  postgres-data:

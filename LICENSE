@@ -1,0 +1,49 @@
+Diteko Server Licence (Freeware), version 1.0
+
+DRAFT: to be reviewed by a lawyer before it is relied on.
+
+Copyright (c) 2026 Lehlohonolo Sehako. All rights reserved.
+
+This licence covers the Diteko server: the container image published as
+ghcr.io/lehlohonolo-sehako/diteko, the software in it, and the self-hosting files
+distributed with it ("the Software"). The Diteko Python package (clients/python) is
+licensed separately under the MIT licence in that folder. Third-party components in the
+Software remain under their own licences, listed in THIRD-PARTY-NOTICES.
+
+1. Grant. The licensor grants you a free, non-exclusive, non-transferable, worldwide,
+   revocable licence to download, install and run the Software, and to use it for any
+   purpose, including commercial testing work, for your own organisation and its
+   employees and contractors acting for it.
+
+2. Restrictions. You may not:
+   (a) sell, rent, lease, sublicense or redistribute the Software, or any modified
+       version of it, to anyone outside your organisation;
+   (b) offer the Software to third parties as a hosted or managed service, or as part
+       of one, where they use its functionality without running their own copy;
+   (c) remove or obscure any licence, copyright or attribution notice in the Software;
+   (d) reverse engineer, decompile or disassemble the Software, except to the extent
+       that applicable law expressly permits it despite this restriction.
+
+3. Your responsibility for connected services. The Software can create and run tests
+   on an Amazon Connect instance using credentials you supply, and those executions are
+   billed to your AWS account. You choose which instance, credentials and API key
+   scopes it uses, and you are responsible for the resulting charges and for having the
+   right to test the systems you point it at.
+
+4. No warranty. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+   FOR A PARTICULAR PURPOSE, ACCURACY AND NON-INFRINGEMENT.
+
+5. Limitation of liability. TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE LICENSOR SHALL
+   NOT BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, INCLUDING CHARGES INCURRED
+   WITH CLOUD OR TELEPHONY PROVIDERS, LOSS OF DATA, OR INDIRECT OR CONSEQUENTIAL LOSS,
+   ARISING FROM OR IN CONNECTION WITH THE SOFTWARE OR ITS USE.
+
+6. Termination. This licence ends automatically if you breach it. On termination you
+   must stop using the Software and delete your copies. Sections 3 to 7 survive.
+
+7. Governing law. This licence is governed by the laws of the Republic of South Africa,
+   and the courts of South Africa have jurisdiction over any dispute about it.
+
+Any right not expressly granted here is reserved by the licensor. For other terms,
+including redistribution or hosting for others, contact the licensor.
