@@ -1,8 +1,8 @@
-Diteko server 0.1.0: third-party components
+Diteko server 0.1.1: third-party components
 
 The Diteko server image includes the components below, each under its own licence.
 Licence texts and NOTICE files of the Java components are inside their jars, which
-ship unmodified in /app/app.jar (BOOT-INF/lib). Diteko itself is licensed under LICENSE.
+ship unmodified in /app/lib. Diteko itself is licensed under LICENSE.
 
 Server (Java) libraries, on the runtime classpath:
      (EPL-2.0) (LGPL-2.1-only) Logback Classic Module (ch.qos.logback:logback-classic:1.5.34 - http://logback.qos.ch/logback-classic)
