@@ -166,3 +166,9 @@ GitHub releases (`server-v…`).
   the previous version. `docker compose exec redis redis-cli FLUSHALL` clears it; nothing is lost.
 - **"Import from Connect" answers 409 not configured**: step 6 is not done, or the app was not
   restarted after editing `.env`.
+
+## Support Diteko
+
+Diteko is free to run for your own organisation. If it saves your team time, you can
+[sponsor it on GitHub](https://github.com/sponsors/Lehlohonolo-Sehako); the
+[docs](https://lehlohonolo-sehako.github.io/diteko-selfhost/support/) list other ways to help.
