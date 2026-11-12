@@ -10,7 +10,7 @@ name: diteko-selfhost
 
 services:
   app:
-    image: ${DITEKO_IMAGE:-ghcr.io/lehlohonolo-sehako/diteko}:${DITEKO_VERSION:-0.1}
+    image: ${DITEKO_IMAGE:-ghcr.io/lehlohonolo-sehako/diteko}:${DITEKO_VERSION:-0.2}
     restart: unless-stopped
     environment:
       SPRING_PROFILES_ACTIVE: prod,api-docs # api-docs: the API reference under Settings

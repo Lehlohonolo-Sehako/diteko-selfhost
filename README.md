@@ -112,12 +112,16 @@ reaches AWS. Running tests on Connect **creates billable test executions**, so s
 non-production instance.
 
 1. An IAM principal for Diteko, allowed on your instance: `connect:ListContactFlows`,
-   `connect:DescribeContactFlow` (to import flows), `connect:CreateTestCase`,
+   `connect:DescribeContactFlow` (to import flows), `connect:DescribeQueue`, `connect:DescribePrompt`,
+   `connect:DescribeHoursOfOperation`, `connect:DescribeContactFlowModule` (to name the resources an
+   imported flow refers to; optional, all read-only), `connect:CreateTestCase`,
    `connect:StartTestCaseExecution` and `connect:GetTestCaseExecutionSummary` (to run tests).
 2. In `.env`, uncomment and fill in `DITEKO_CONNECT_ENABLED=true`, `DITEKO_CONNECT_REGION`,
    `DITEKO_CONNECT_INSTANCEID` (the UUID at the end of the instance ARN) and the AWS credentials.
 3. `docker compose up -d`, then check: `curl -s -H "Authorization: Bearer $KEY" localhost:8080/api/settings/connect`
-   answers `"enabled":true`.
+   answers `"enabled":true`. The log says `Amazon Connect: on` or `off` at startup. With
+   `DITEKO_CONNECT_ENABLED=true` but no region or instance id, the app stops at startup and names
+   the missing setting.
 4. Live runs need a `PUBLISH_LIVE` key. Give it only to the people and jobs that should spend
    money on your AWS account. Every run stays a dry run unless the caller asks otherwise.
 
@@ -142,14 +146,14 @@ private network or VPN.
 
 ## Day to day
 
-| Task         | Command                                                                                                                                                                                                                                          |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Status, logs | `docker compose ps`, `docker compose logs -f app`                                                                                                                                                                                                |
-| Upgrade      | `docker compose pull && docker compose up -d`, then `docker compose exec redis redis-cli FLUSHALL`. With `DITEKO_VERSION=0.1` that takes the newest 0.1.x; for a new minor version, change it in `.env` first. The database is migrated on start |
-| Back up      | `docker compose exec postgres pg_dump -U diteko diteko > diteko-$(date +%F).sql`                                                                                                                                                                 |
-| Restore      | `docker compose exec -T postgres psql -U diteko diteko < diteko-2026-10-16.sql` (into an empty database)                                                                                                                                         |
-| Stop         | `docker compose down` (data is kept in the `diteko-selfhost_postgres-data` volume)                                                                                                                                                               |
-| Remove all   | `docker compose down -v` (**deletes every project and result**)                                                                                                                                                                                  |
+| Task         | Command                                                                                                                                                                                                                                                                                                                                |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Status, logs | `docker compose ps`, `docker compose logs -f app`                                                                                                                                                                                                                                                                                      |
+| Upgrade      | `docker compose pull && docker compose up -d`. The server clears its Redis caches when it starts on a new version (before 0.2.0, run `docker compose exec redis redis-cli FLUSHALL` too). With `DITEKO_VERSION=0.2` that takes the newest 0.2.x; for a new minor version, change it in `.env` first. The database is migrated on start |
+| Back up      | `docker compose exec postgres pg_dump -U diteko diteko > diteko-$(date +%F).sql`                                                                                                                                                                                                                                                       |
+| Restore      | `docker compose exec -T postgres psql -U diteko diteko < diteko-2026-10-16.sql` (into an empty database)                                                                                                                                                                                                                               |
+| Stop         | `docker compose down` (data is kept in the `diteko-selfhost_postgres-data` volume)                                                                                                                                                                                                                                                     |
+| Remove all   | `docker compose down -v` (**deletes every project and result**)                                                                                                                                                                                                                                                                        |
 
 Back up before an upgrade. Releases and what changed in each are listed under the repository's
 GitHub releases (`server-v…`).
@@ -163,9 +167,11 @@ GitHub releases (`server-v…`).
   and shows whether keys are on.
 - **403**: the key's scope is too low for that call (see step 4).
 - **Requests fail with `InvalidClassException` after an upgrade**: Redis still holds data cached by
-  the previous version. `docker compose exec redis redis-cli FLUSHALL` clears it; nothing is lost.
+  the previous version. The server clears it on start from 0.2.0 on; before that,
+  or if it persists, `docker compose exec redis redis-cli FLUSHALL` clears it. Nothing is lost.
 - **"Import from Connect" answers 409 not configured**: step 6 is not done, or the app was not
-  restarted after editing `.env`.
+  restarted after editing `.env`. `docker compose logs app | grep "Amazon Connect"` shows whether
+  the running app sees it.
 
 ## Support Diteko
 
