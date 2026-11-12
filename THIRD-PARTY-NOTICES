@@ -1,4 +1,4 @@
-Diteko server 0.2.0: third-party components
+Diteko server 0.2.1: third-party components
 
 The Diteko server image includes the components below, each under its own licence.
 Licence texts and NOTICE files of the Java components are inside their jars, which
